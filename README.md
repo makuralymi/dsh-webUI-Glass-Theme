@@ -1,5 +1,7 @@
 # dsh-client-ui-frosted-glass
 
+[English](README.md) | [中文](README.zh.md)
+
 A **global frosted-glass (backdrop blur) theme plugin** for the dsh Web UI. It keeps the existing light/dark preference untouched and layers a translucent surface-token override plus a global `backdrop-filter` on top, giving the whole UI an iOS/macOS-style frosted-glass look.
 
 ## Screenshot
