@@ -34,9 +34,10 @@ Two browser-side halves:
 
 ## Install
 
-Install into the web profile via the profile plugin manager:
+Clone the repo, then install into the web profile via the profile plugin manager:
 
-    dsh plugin --profile web add /mnt/data/project/dsh-plugin
+    git clone https://github.com/makuralymi/dsh-webUI-Glass-Theme.git
+    dsh plugin --profile web add ./dsh-webUI-Glass-Theme
 
 This runs pnpm in the profile directory and, because the package declares `dsh.bundle.patch`, auto-adds it to `dsh.profile.bundles`; its bundle patch then inserts the `ui-frosted-glass` row automatically — no manual `cordis.patch.yml` edit is needed. Then:
 
@@ -53,7 +54,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 1. Add the directory as a profile dependency:
 
     cd "$DSH_HOME/profiles/web"
-    pnpm add /mnt/data/project/dsh-plugin
+    pnpm add <path-to-the-cloned-repo, e.g. ./dsh-webUI-Glass-Theme>
 
 2. Append a row to `$DSH_HOME/profiles/web/cordis.patch.yml`:
 

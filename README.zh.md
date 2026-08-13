@@ -34,9 +34,10 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 
 ## 安装
 
-本插件通过 profile 的插件管理安装到 web profile：
+先克隆本仓库，再通过 profile 的插件管理安装到 web profile：
 
-    dsh plugin --profile web add /mnt/data/project/dsh-plugin
+    git clone https://github.com/makuralymi/dsh-webUI-Glass-Theme.git
+    dsh plugin --profile web add ./dsh-webUI-Glass-Theme
 
 该命令会在 profile 目录内执行 pnpm 安装，并因包声明了 dsh.bundle.patch 而自动把它加入 dsh.profile.bundles，其 bundle 补丁会自动插入 ui-frosted-glass 行，无需再手动改 cordis.patch.yml。随后：
 
@@ -53,7 +54,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 1. 把本目录安装为 profile 依赖：
 
     cd "$DSH_HOME/profiles/web"
-    pnpm add /mnt/data/project/dsh-plugin
+    pnpm add <克隆下来的仓库路径，例如 ./dsh-webUI-Glass-Theme>
 
 2. 在 $DSH_HOME/profiles/web/cordis.patch.yml 中追加一行：
 
