@@ -1,0 +1,37 @@
+{
+  "name": "dsh-client-ui-frosted-glass",
+  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "files": [
+    "assets/bg.jpeg",
+    "cordis.patch.yml",
+    "lib/client.js",
+    "lib/index.js"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-client-ui-theme": "^0.1.0-rc.6"
+  }
+}
