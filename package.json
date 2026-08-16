@@ -1,7 +1,7 @@
 {
   "name": "dsh-client-ui-frosted-glass",
-  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI",
-  "version": "0.1.0",
+  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI with animated light/dark switching and a scheduled theme timer",
+  "version": "0.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -32,6 +32,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-client-ui-theme": "^0.1.0-rc.6"
+    "@deepseek-ai/dsh-client-ui-theme": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-primitives": "^0.1.0-rc.5",
+    "react": "^18.2.0"
   }
 }

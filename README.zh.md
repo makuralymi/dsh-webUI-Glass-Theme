@@ -2,6 +2,11 @@
 
 为 dsh Web UI 提供的**全局毛玻璃（frosted glass / backdrop blur）主题插件**。它不改变现有浅色/深色偏好，而是在任意主题之上叠加一层半透明表面 token 覆盖与全局 backdrop-filter 模糊，让整个界面呈现 iOS/macOS 风格的磨砂玻璃质感。
 
+此外，插件在「设置 → 通用设置」的**外观**下方新增一行「切换动画与定时」：
+
+- **切换动画**：无动画 / 淡入淡出 / 中心圆形扩散 / 从上向下扫过，点击浅色/深色时全屏过渡。
+- **定时切换**：可分别设置每天自动切到深色与浅色的时间（24 小时制）；到点自动切换，手动切换会保留到下一个时间点。
+
 ## 截图
 
 ![毛玻璃效果截图](assets/sc.png)
@@ -18,6 +23,14 @@
 2. **半透明表面 token 覆盖**（通过 ctx.theme.overrideTokens）
    - 把 --dsw-alias-bg-base、--dsw-alias-bg-layer-1/2/3、--dsw-alias-bg-overlay、--dsw-specific-sidebar-fill、--dsw-specific-menu 等背景 token 改成半透明 rgba，每个都带 light / dark 双色。
    - 因为所有组件都通过 var(--dsw-*) 取色，这一层与 class 名无关，即使外壳重建后 hash 变化，半透明效果依然成立。
+
+3. **主题切换动画**
+   - 包装 ctx.theme.setTheme，使用浏览器原生 View Transition API：由浏览器对切换前后的**真实页面画面**分别截图，把新画面作为蒙版淡入 / 从点击位置圆形扩散 / 从上向下扫过，无纯色填充、过渡无缝。
+   - 尊重 `prefers-reduced-motion`；系统偏好不变时（如选择「跟随系统」但解析结果相同）直接切换；不支持 View Transition API 时降级为即时切换。
+
+4. **定时浅色/深色切换**
+   - 在设置行中开启后，按「深色开始时间」和「浅色开始时间」安排下一个边界定时器；到点调用同一套动画切换逻辑。
+   - 设置存放在用户设置文档的 `ui-theme` 段（`frosted*` 前缀字段），随 profile 持久化。
 
 ## 目录结构
 
@@ -67,6 +80,8 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 启动后浏览器应看到三栏外壳及其上的浮层呈现半透明磨砂效果，浅色/深色切换都生效。
 - 打开开发者工具，确认 head 里存在 style[data-plugin="dsh-client-ui-frosted-glass"]，且 body 内联了 --dsw-alias-bg-base 等半透明 token。
 - body[data-ds-dark-theme] 会切换深色渐变与深色半透明 token。
+- 「设置 → 通用设置 → 外观」下方出现「切换动画与定时」；选择动画后点击浅色/深色，能看到对应的全屏过渡。
+- 开启定时后设置深色/浅色时间，到时间点会自动切换；配置持久化在 `$DSH_HOME/settings.yaml` 的 `ui-theme.frosted*` 字段。
 
 ## 自定义
 
@@ -74,6 +89,9 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 背景图：替换 assets/bg.jpeg 后重新内联（或改 lib/client.js 里的 --frosted-bg-image data URI）；深色压暗强度改 body[data-ds-dark-theme] 里 linear-gradient 的 alpha。
 - 半透明度：改 FROSTED_TOKENS 里各 token 的 rgba alpha 值。
 - 需要更彻底的“全局”覆盖时，可继续往 FROSTED_TOKENS 里加 --dsw-alias-bg-* / --dsw-specific-* token。
+- 动画速度：改 lib/client.js 中 CSS 变量 `--frost-vt-duration`（默认 340ms）。
+- 动画曲线：改 CSS 变量 `--frost-vt-easing`。
+- 默认时间：改 lib/client.js 中 SETTINGS_DEFAULTS 的 frostedDarkTime / frostedLightTime。
 
 ## 已知限制
 

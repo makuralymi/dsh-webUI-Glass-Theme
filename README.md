@@ -4,6 +4,11 @@
 
 A **global frosted-glass (backdrop blur) theme plugin** for the dsh Web UI. It keeps the existing light/dark preference untouched and layers a translucent surface-token override plus a global `backdrop-filter` on top, giving the whole UI an iOS/macOS-style frosted-glass look.
 
+The plugin also adds a **Transition & schedule** row right below **Appearance** in Settings → General:
+
+- **Switch animation**: None / Fade / Circle reveal / Wipe from top — full-screen transitions when light/dark is switched.
+- **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
+
 ## Screenshot
 
 ![Frosted glass screenshot](assets/sc.png)
@@ -20,6 +25,14 @@ Two browser-side halves:
 2. **Translucent surface-token override** (via `ctx.theme.overrideTokens`)
    - Rewrites `--dsw-alias-bg-base`, `--dsw-alias-bg-layer-1/2/3`, `--dsw-alias-bg-overlay`, `--dsw-specific-sidebar-fill`, `--dsw-specific-menu`, ... to translucent `rgba(...)`, each with a `{ light, dark }` pair.
    - Because every component reads `var(--dsw-*)`, this layer is class-name agnostic and survives shell re-hashing.
+
+3. **Theme-switch animations**
+   - Wraps `ctx.theme.setTheme` with the browser-native View Transition API: the browser snapshots the REAL before/after frames and uses the new frame as the mask — fade, circle reveal centered on the click, or wipe from top — with no solid-color veil.
+   - Respects `prefers-reduced-motion`; switches without an animation when the resolved scheme stays the same (e.g. “System” resolving to the current scheme), and falls back to an instant switch where View Transitions are unavailable.
+
+4. **Scheduled light/dark switching**
+   - When enabled, a timer is scheduled for the next “dark theme at” / “light theme at” boundary and uses the same animated switch path.
+   - Preferences persist under the `ui-theme` section of the user-settings document with `frosted*`-prefixed fields.
 
 ## Layout
 
@@ -69,6 +82,8 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - The shell frame and its floating surfaces render translucent + blurred in both light and dark.
 - DevTools shows a `<style data-plugin="dsh-client-ui-frosted-glass">` in `<head>` and inline translucent tokens (`--dsw-alias-bg-base`, ...) on `body`.
 - `body[data-ds-dark-theme]` switches the dark gradient and dark translucent tokens.
+- Settings → General → below Appearance shows **Transition & schedule**; picking an animation and clicking light/dark plays the full-screen transition.
+- With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
 
 ## Customize
 
@@ -76,6 +91,9 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - Background: replace `assets/bg.jpeg` then re-inline (or edit the `--frosted-bg-image` data URI in `lib/client.js`); dark-mode dim strength is the `linear-gradient` alpha under `body[data-ds-dark-theme]`.
 - Translucency: the `rgba` alpha values in `FROSTED_TOKENS`.
 - For broader coverage, add more `--dsw-alias-bg-*` / `--dsw-specific-*` tokens to `FROSTED_TOKENS`.
+- Animation speed: `--frost-vt-duration` in `lib/client.js` (default 340ms).
+- Animation easing: `--frost-vt-easing`.
+- Default times: `frostedDarkTime` / `frostedLightTime` in `SETTINGS_DEFAULTS`.
 
 ## Known limitations
 
