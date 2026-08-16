@@ -19,6 +19,7 @@
 1. **全局样式表**（lib/client.js 内联注入）
    - 在 body 上铺一层 bg.jpeg 背景（cover 铺满并居中，base64 内联，源文件在 assets/bg.jpeg），浅色显示原图、深色叠加半透明深色遮罩压暗，作为模糊的“背后内容”。
    - 给外壳三栏框架以及浮层（menu / dialog / listbox / tooltip 等 role）施加 backdrop-filter 模糊。
+   - 通过 MutationObserver 自动识别其他插件后挂载到 body 下的 fixed/absolute 面板，自动补上毛玻璃（无需新插件适配）。
    - 把内置遮罩模糊 token --dsw-mask-blur 从 blur(2px) 加强，使弹窗/图片遮罩也更“玻璃”。
 
 2. **半透明表面 token 覆盖**（通过 ctx.theme.overrideTokens）

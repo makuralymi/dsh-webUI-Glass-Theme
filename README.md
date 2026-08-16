@@ -21,6 +21,7 @@ Two browser-side halves:
 1. **Global stylesheet** (inlined by `lib/client.js`)
    - Paints `bg.jpeg` as a centered, cover background on `body` (inlined as base64; source kept at `assets/bg.jpeg`), shown as-is in light mode and dimmed behind a translucent dark veil in dark mode — the content the blur reveals.
    - Applies `backdrop-filter: blur(...) saturate(...)` to the three-column shell frame and to floating surfaces (`[role="menu"]`, `[role="dialog"]`, `[role="listbox"]`, `[role="tooltip"]`, ...).
+   - A MutationObserver auto-marks fixed/absolute panels that other plugins portal under `<body>`, giving them the same frosted glass without any per-plugin adaptation.
    - Strengthens the stock `--dsw-mask-blur` token so dialogs / image masks blur harder.
 
 2. **Translucent surface-token override** (via `ctx.theme.overrideTokens`)
