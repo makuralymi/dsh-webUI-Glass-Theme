@@ -37,7 +37,7 @@
    - URL 背景写入 `ui-theme.frostedBackgroundUrl`；本地图片压缩后写入 `localStorage`，避免 settings.yaml 塞入数 MB 的 base64。
    - 两者通过 body 上的 `--frosted-bg-image` 变量生效，覆盖插件内置的默认背景；恢复默认时移除该变量。
 
-[演示截图](assets/sc2.png)
+![演示截图](assets/sc2.png)
 
 ## 目录结构
 

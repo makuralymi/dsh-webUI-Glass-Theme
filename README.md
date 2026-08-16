@@ -39,7 +39,7 @@ Two browser-side halves:
    - URL backgrounds persist as `ui-theme.frostedBackgroundUrl`; local images are compressed and stored in `localStorage` so `settings.yaml` never carries a multi-megabyte base64 string.
    - Both override the `--frosted-bg-image` variable on `<body>`, replacing the built-in background until reset.
 
-[演示截图](assets/sc2.png)
+![演示截图](assets/sc2.png)
 
 ## Layout
 
