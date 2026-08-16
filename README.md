@@ -8,6 +8,7 @@ The plugin also adds a **Transition & schedule** row right below **Appearance** 
 
 - **Switch animation**: None / Fade / Circle reveal / Wipe from top — full-screen transitions when light/dark is switched.
 - **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
+- **Custom background**: enter an image URL or choose a local image (auto-compressed and stored browser-locally), with one-click reset to the built-in background.
 
 ## Screenshot
 
@@ -33,6 +34,12 @@ Two browser-side halves:
 4. **Scheduled light/dark switching**
    - When enabled, a timer is scheduled for the next “dark theme at” / “light theme at” boundary and uses the same animated switch path.
    - Preferences persist under the `ui-theme` section of the user-settings document with `frosted*`-prefixed fields.
+
+5. **Custom background image**
+   - URL backgrounds persist as `ui-theme.frostedBackgroundUrl`; local images are compressed and stored in `localStorage` so `settings.yaml` never carries a multi-megabyte base64 string.
+   - Both override the `--frosted-bg-image` variable on `<body>`, replacing the built-in background until reset.
+
+[演示截图](assets/sc2.png)
 
 ## Layout
 
@@ -84,6 +91,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - `body[data-ds-dark-theme]` switches the dark gradient and dark translucent tokens.
 - Settings → General → below Appearance shows **Transition & schedule**; picking an animation and clicking light/dark plays the full-screen transition.
 - With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
+- **Custom background image**: after entering a URL or choosing a local image, `--frosted-bg-image` on `<body>` updates immediately; “Reset to default” restores the built-in background.
 
 ## Customize
 
@@ -94,6 +102,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - Animation speed: `--frost-vt-duration` in `lib/client.js` (default 340ms).
 - Animation easing: `--frost-vt-easing`.
 - Default times: `frostedDarkTime` / `frostedLightTime` in `SETTINGS_DEFAULTS`.
+- Local-image compression: `compressImage` `maxDimension` (default 2560) and `quality` (default 0.86).
 
 ## Known limitations
 

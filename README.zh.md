@@ -6,6 +6,7 @@
 
 - **切换动画**：无动画 / 淡入淡出 / 中心圆形扩散 / 从上向下扫过，点击浅色/深色时全屏过渡。
 - **定时切换**：可分别设置每天自动切到深色与浅色的时间（24 小时制）；到点自动切换，手动切换会保留到下一个时间点。
+- **自定义背景图**：可输入图片 URL，或选择本地图片（自动压缩后保存在浏览器本地），一键恢复默认背景。
 
 ## 截图
 
@@ -31,6 +32,12 @@
 4. **定时浅色/深色切换**
    - 在设置行中开启后，按「深色开始时间」和「浅色开始时间」安排下一个边界定时器；到点调用同一套动画切换逻辑。
    - 设置存放在用户设置文档的 `ui-theme` 段（`frosted*` 前缀字段），随 profile 持久化。
+
+5. **自定义背景图**
+   - URL 背景写入 `ui-theme.frostedBackgroundUrl`；本地图片压缩后写入 `localStorage`，避免 settings.yaml 塞入数 MB 的 base64。
+   - 两者通过 body 上的 `--frosted-bg-image` 变量生效，覆盖插件内置的默认背景；恢复默认时移除该变量。
+
+[演示截图](assets/sc2.png)
 
 ## 目录结构
 
@@ -82,6 +89,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - body[data-ds-dark-theme] 会切换深色渐变与深色半透明 token。
 - 「设置 → 通用设置 → 外观」下方出现「切换动画与定时」；选择动画后点击浅色/深色，能看到对应的全屏过渡。
 - 开启定时后设置深色/浅色时间，到时间点会自动切换；配置持久化在 `$DSH_HOME/settings.yaml` 的 `ui-theme.frosted*` 字段。
+- 「自定义背景图」中输入 URL 或选择本地图片后，body 的 `--frosted-bg-image` 会立即更新；点击「恢复默认」后回到内置背景。
 
 ## 自定义
 
@@ -92,6 +100,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 动画速度：改 lib/client.js 中 CSS 变量 `--frost-vt-duration`（默认 340ms）。
 - 动画曲线：改 CSS 变量 `--frost-vt-easing`。
 - 默认时间：改 lib/client.js 中 SETTINGS_DEFAULTS 的 frostedDarkTime / frostedLightTime。
+- 本地图片压缩：改 `compressImage` 的 `maxDimension`（默认 2560）与 `quality`（默认 0.86）。
 
 ## 已知限制
 
