@@ -49,9 +49,9 @@ Two browser-side halves:
 
 6. **Composer glow (lighting effect)**
    - The switch persists as `ui-theme.frostedGlowEnabled` (default on) and is mirrored to `body[data-frost-glow]`.
-   - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored halo (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
-   - Running: `body:has([data-streaming])` detects the assistant's streaming reply and swaps the edge and halo to a `conic-gradient` rainbow that flows around the border via a `hue-rotate` animation while the halo pulses outward (respects `prefers-reduced-motion`, degrading to a static rainbow).
-   - All glow renders strictly OUTSIDE the dialog: the halo layer punches the card interior out with a clip-path hole, so the translucent glass stays clean and un-tinted inside.
+   - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored soft glow (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
+   - Running: `body:has([data-streaming])` detects the assistant's streaming reply and swaps the edge ring to a `conic-gradient` rainbow that flows around the border via a `hue-rotate` animation (respects `prefers-reduced-motion`, degrading to a static rainbow).
+   - The glow consists of an outside edge ring plus naturally fading `box-shadow` light — everything stays OUTSIDE the dialog, the interior remains clean with no hard boundary.
 
 ![演示截图](assets/sc2.png)
 
@@ -118,7 +118,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - Animation easing: `--frost-vt-easing`.
 - Default times: `frostedDarkTime` / `frostedLightTime` in `SETTINGS_DEFAULTS`.
 - Local-image compression: `compressImage` `maxDimension` (default 2560) and `quality` (default 0.86).
-- Glow color: `--frost-glow-color` (defaults to `--dsw-alias-brand-primary`) in `lib/client.js`; flow speed is the `frost-glow-ring-flow` / `frost-glow-aura-flow` animation duration (default 2.4s); glow strength is the idle/running `box-shadow` layers and the `::after` halo opacity.
+- Glow color: `--frost-glow-color` (defaults to `--dsw-alias-brand-primary`) in `lib/client.js`; flow speed is the `frost-glow-ring-flow` animation duration (default 2.4s); glow strength is the idle/running `box-shadow` layers and the edge-ring opacity.
 
 ## Known limitations
 

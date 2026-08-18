@@ -47,9 +47,9 @@
 
 6. **输入框灯光效果**
    - 开关存于 `ui-theme.frostedGlowEnabled`（默认开启），通过 `body[data-frost-glow]` 属性切换。
-   - 空闲态：输入框 `[data-composer-card]` 获得蓝色发光边缘（掩膜渐变描边）+ 品牌色光晕（box-shadow），颜色取自 `--dsw-alias-brand-primary`，主题 token 变化时实时换色。
-   - 运行态：`body:has([data-streaming])` 检测到助手流式回复后，边缘与光晕切换为 `conic-gradient` 彩虹，并以 `hue-rotate` 动画沿边框流动、光晕向外脉冲（尊重 `prefers-reduced-motion`，降级为静态彩光）。
-   - 所有发光都严格渲染在**对话框外侧**：光晕层用挖孔 `clip-path` 裁掉卡片内部区域，半透明毛玻璃内部保持洁净、不被染色。
+   - 空闲态：输入框 `[data-composer-card]` 获得蓝色发光边缘（掩膜渐变描边环）+ 品牌色柔光（box-shadow），颜色取自 `--dsw-alias-brand-primary`，主题 token 变化时实时换色。
+   - 运行态：`body:has([data-streaming])` 检测到助手流式回复后，边缘描边环切换为 `conic-gradient` 彩虹，并以 `hue-rotate` 动画沿边框流动（尊重 `prefers-reduced-motion`，降级为静态彩光）。
+   - 发光由外侧渐变描边环与自然衰减的 box-shadow 柔光构成，全部位于**对话框外侧**，内部保持洁净、无明显分界线。
 
 ![演示截图](assets/sc2.png)
 
@@ -116,7 +116,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 动画曲线：改 CSS 变量 `--frost-vt-easing`。
 - 默认时间：改 lib/client.js 中 SETTINGS_DEFAULTS 的 frostedDarkTime / frostedLightTime。
 - 本地图片压缩：改 `compressImage` 的 `maxDimension`（默认 2560）与 `quality`（默认 0.86）。
-- 灯光颜色：改 lib/client.js 中 `--frost-glow-color`（默认取 `--dsw-alias-brand-primary`）；流动速度改 `frost-glow-ring-flow` / `frost-glow-aura-flow` 的动画时长（默认 2.4s）；发光强度改空闲/运行态 box-shadow 与 `::after` 的透明度。
+- 灯光颜色：改 lib/client.js 中 `--frost-glow-color`（默认取 `--dsw-alias-brand-primary`）；流动速度改 `frost-glow-ring-flow` 的动画时长（默认 2.4s）；发光强度改空闲/运行态 box-shadow 与描边环的透明度。
 
 ## 已知限制
 
