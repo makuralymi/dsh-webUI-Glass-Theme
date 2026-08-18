@@ -49,6 +49,7 @@
    - 开关存于 `ui-theme.frostedGlowEnabled`（默认开启），通过 `body[data-frost-glow]` 属性切换。
    - 空闲态：输入框 `[data-composer-card]` 获得蓝色发光边缘（掩膜渐变描边）+ 品牌色光晕（box-shadow），颜色取自 `--dsw-alias-brand-primary`，主题 token 变化时实时换色。
    - 运行态：`body:has([data-streaming])` 检测到助手流式回复后，边缘与光晕切换为 `conic-gradient` 彩虹，并以 `hue-rotate` 动画沿边框流动、光晕向外脉冲（尊重 `prefers-reduced-motion`，降级为静态彩光）。
+   - 所有发光都严格渲染在**对话框外侧**：光晕层用挖孔 `clip-path` 裁掉卡片内部区域，半透明毛玻璃内部保持洁净、不被染色。
 
 ![演示截图](assets/sc2.png)
 

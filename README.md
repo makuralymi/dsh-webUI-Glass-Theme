@@ -51,6 +51,7 @@ Two browser-side halves:
    - The switch persists as `ui-theme.frostedGlowEnabled` (default on) and is mirrored to `body[data-frost-glow]`.
    - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored halo (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
    - Running: `body:has([data-streaming])` detects the assistant's streaming reply and swaps the edge and halo to a `conic-gradient` rainbow that flows around the border via a `hue-rotate` animation while the halo pulses outward (respects `prefers-reduced-motion`, degrading to a static rainbow).
+   - All glow renders strictly OUTSIDE the dialog: the halo layer punches the card interior out with a clip-path hole, so the translucent glass stays clean and un-tinted inside.
 
 ![演示截图](assets/sc2.png)
 
