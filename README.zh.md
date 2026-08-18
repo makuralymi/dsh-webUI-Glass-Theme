@@ -48,7 +48,7 @@
 6. **输入框灯光效果**
    - 开关存于 `ui-theme.frostedGlowEnabled`（默认开启），通过 `body[data-frost-glow]` 属性切换。
    - 空闲态：输入框 `[data-composer-card]` 获得蓝色发光边缘（掩膜渐变描边环）+ 品牌色柔光（box-shadow），颜色取自 `--dsw-alias-brand-primary`，主题 token 变化时实时换色。
-   - 运行态：`body:has([data-streaming])` 检测到助手流式回复后，边缘描边环切换为 `conic-gradient` 彩虹，并以 `hue-rotate` 动画沿边框流动（尊重 `prefers-reduced-motion`，降级为静态彩光）。
+   - 运行态：对话**一开始运行**（提交即触发，涵盖工具调用等阶段，直到对话完成）发光即切换为 `conic-gradient` 彩虹，以 `hue-rotate` 动画沿边框流动；运行状态取自会话运行时的 `running` 标志（镜像到 `body[data-conversation-running]`），`body:has([data-streaming])` 作兜底；对话完成后自动恢复蓝色（尊重 `prefers-reduced-motion`，降级为静态彩光）。
    - 发光由外侧渐变描边环与自然衰减的 box-shadow 柔光构成，全部位于**对话框外侧**，内部保持洁净、无明显分界线。
 
 ![演示截图](assets/sc2.png)

@@ -50,7 +50,7 @@ Two browser-side halves:
 6. **Composer glow (lighting effect)**
    - The switch persists as `ui-theme.frostedGlowEnabled` (default on) and is mirrored to `body[data-frost-glow]`.
    - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored soft glow (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
-   - Running: `body:has([data-streaming])` detects the assistant's streaming reply and swaps the edge ring to a `conic-gradient` rainbow that flows around the border via a `hue-rotate` animation (respects `prefers-reduced-motion`, degrading to a static rainbow).
+   - Running: the ring turns into a flowing `conic-gradient` rainbow from the moment the conversation starts running until it completes — the session runtime's `running` flag is mirrored to `body[data-conversation-running]` by JS (covers tool-call phases), with `body:has([data-streaming])` as a fallback; the edge reverts to blue when the run ends (respects `prefers-reduced-motion`, degrading to a static rainbow).
    - The glow consists of an outside edge ring plus naturally fading `box-shadow` light — everything stays OUTSIDE the dialog, the interior remains clean with no hard boundary.
 
 ![演示截图](assets/sc2.png)
