@@ -2,11 +2,16 @@
 
 为 dsh Web UI 提供的**全局毛玻璃（frosted glass / backdrop blur）主题插件**。它不改变现有浅色/深色偏好，而是在任意主题之上叠加一层半透明表面 token 覆盖与全局 backdrop-filter 模糊，让整个界面呈现 iOS/macOS 风格的磨砂玻璃质感。
 
-此外，插件在「设置 → 通用设置」的**外观**下方新增一行「切换动画与定时」：
+此外，插件在「设置 → 通用设置」的**外观**下方新增三行：
+
+- **切换动画与定时**：切换动画 / 定时切换（见下）。
+- **自定义背景**：静态图片与动态壁纸视频。
+- **灯光效果**：输入框发光边缘开关（见下）。
 
 - **切换动画**：无动画 / 淡入淡出 / 中心圆形扩散 / 从上向下扫过，点击浅色/深色时全屏过渡。
 - **定时切换**：可分别设置每天自动切到深色与浅色的时间（24 小时制）；到点自动切换，手动切换会保留到下一个时间点。
 - **自定义背景**：支持静态图片（URL / 本地）与动态壁纸视频（视频 URL / 本地视频），一键恢复默认背景。
+- **灯光效果**：给输入框（composer）加一层蓝色发光边缘与光晕，颜色实时跟随主题品牌色；当对话正在运行（助手流式回复）时，发光自动变为向外发散、沿边框流动的彩虹彩光；可随时关闭。
 
 ## 截图
 
@@ -39,6 +44,11 @@
    - 动态壁纸：视频 URL 写入 `ui-theme.frostedBackgroundVideoUrl`；本地视频以 Blob 形式写入 IndexedDB。
    - 视频通过全屏 `video` 层（`object-fit: cover`、静音循环）作为动态背景；静态背景通过 body 的 `--frosted-bg-image` 变量生效。
    - 恢复默认时清除所有自定义背景，回到内置 `bg.jpeg`。
+
+6. **输入框灯光效果**
+   - 开关存于 `ui-theme.frostedGlowEnabled`（默认开启），通过 `body[data-frost-glow]` 属性切换。
+   - 空闲态：输入框 `[data-composer-card]` 获得蓝色发光边缘（掩膜渐变描边）+ 品牌色光晕（box-shadow），颜色取自 `--dsw-alias-brand-primary`，主题 token 变化时实时换色。
+   - 运行态：`body:has([data-streaming])` 检测到助手流式回复后，边缘与光晕切换为 `conic-gradient` 彩虹，并以 `hue-rotate` 动画沿边框流动、光晕向外脉冲（尊重 `prefers-reduced-motion`，降级为静态彩光）。
 
 ![演示截图](assets/sc2.png)
 
@@ -93,6 +103,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 「设置 → 通用设置 → 外观」下方出现「切换动画与定时」；选择动画后点击浅色/深色，能看到对应的全屏过渡。
 - 开启定时后设置深色/浅色时间，到时间点会自动切换；配置持久化在 `$DSH_HOME/settings.yaml` 的 `ui-theme.frosted*` 字段。
 - 「自定义背景」中可分别选择静态图片或动态壁纸：选择本地视频后会出现全屏 `video` 动态背景；点击「恢复默认背景图」后回到内置背景。
+- 「灯光效果」默认开启：输入框呈现蓝色发光边缘；对话运行时变为流动彩虹光晕；关闭开关后发光立即消失，body 上的 `data-frost-glow` 属性同步移除。
 
 ## 自定义
 
@@ -104,6 +115,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 动画曲线：改 CSS 变量 `--frost-vt-easing`。
 - 默认时间：改 lib/client.js 中 SETTINGS_DEFAULTS 的 frostedDarkTime / frostedLightTime。
 - 本地图片压缩：改 `compressImage` 的 `maxDimension`（默认 2560）与 `quality`（默认 0.86）。
+- 灯光颜色：改 lib/client.js 中 `--frost-glow-color`（默认取 `--dsw-alias-brand-primary`）；流动速度改 `frost-glow-ring-flow` / `frost-glow-aura-flow` 的动画时长（默认 2.4s）；发光强度改空闲/运行态 box-shadow 与 `::after` 的透明度。
 
 ## 已知限制
 

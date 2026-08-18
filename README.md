@@ -4,11 +4,16 @@
 
 A **global frosted-glass (backdrop blur) theme plugin** for the dsh Web UI. It keeps the existing light/dark preference untouched and layers a translucent surface-token override plus a global `backdrop-filter` on top, giving the whole UI an iOS/macOS-style frosted-glass look.
 
-The plugin also adds a **Transition & schedule** row right below **Appearance** in Settings → General:
+The plugin also adds three rows right below **Appearance** in Settings → General:
+
+- **Transition & schedule**: switch animation + scheduled switching (see below).
+- **Custom background**: static images and dynamic wallpaper videos.
+- **Lighting effect**: the composer glow on/off switch (see below).
 
 - **Switch animation**: None / Fade / Circle reveal / Wipe from top — full-screen transitions when light/dark is switched.
 - **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
 - **Custom background**: static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
+- **Lighting effect**: a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; while the assistant is replying, the glow radiates outward as a rainbow that flows around the border. Can be switched off at any time.
 
 ## Screenshot
 
@@ -41,6 +46,11 @@ Two browser-side halves:
    - Dynamic wallpaper: video URLs persist as `ui-theme.frostedBackgroundVideoUrl`; local videos are stored as Blobs in IndexedDB.
    - Videos render through a full-screen `<video>` layer (`object-fit: cover`, muted loop) while static backgrounds override the `--frosted-bg-image` variable on `<body>`.
    - Reset clears every custom source and returns to the built-in `bg.jpeg`.
+
+6. **Composer glow (lighting effect)**
+   - The switch persists as `ui-theme.frostedGlowEnabled` (default on) and is mirrored to `body[data-frost-glow]`.
+   - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored halo (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
+   - Running: `body:has([data-streaming])` detects the assistant's streaming reply and swaps the edge and halo to a `conic-gradient` rainbow that flows around the border via a `hue-rotate` animation while the halo pulses outward (respects `prefers-reduced-motion`, degrading to a static rainbow).
 
 ![演示截图](assets/sc2.png)
 
@@ -95,6 +105,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - Settings → General → below Appearance shows **Transition & schedule**; picking an animation and clicking light/dark plays the full-screen transition.
 - With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
 - **Custom background**: choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
+- **Lighting effect** is on by default: the input shows a blue glowing edge; during a running reply it becomes a flowing rainbow aura. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
 
 ## Customize
 
@@ -106,6 +117,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - Animation easing: `--frost-vt-easing`.
 - Default times: `frostedDarkTime` / `frostedLightTime` in `SETTINGS_DEFAULTS`.
 - Local-image compression: `compressImage` `maxDimension` (default 2560) and `quality` (default 0.86).
+- Glow color: `--frost-glow-color` (defaults to `--dsw-alias-brand-primary`) in `lib/client.js`; flow speed is the `frost-glow-ring-flow` / `frost-glow-aura-flow` animation duration (default 2.4s); glow strength is the idle/running `box-shadow` layers and the `::after` halo opacity.
 
 ## Known limitations
 
