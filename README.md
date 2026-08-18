@@ -4,16 +4,15 @@
 
 A **global frosted-glass (backdrop blur) theme plugin** for the dsh Web UI. It keeps the existing light/dark preference untouched and layers a translucent surface-token override plus a global `backdrop-filter` on top, giving the whole UI an iOS/macOS-style frosted-glass look.
 
-The plugin also adds three rows right below **Appearance** in Settings → General:
+The plugin also adds a **Transition & schedule** row right below **Appearance** in Settings → General, plus a new **Theme settings** section in the settings navigation:
 
-- **Transition & schedule**: switch animation + scheduled switching (see below).
-- **Custom background**: static images and dynamic wallpaper videos.
-- **Lighting effect**: the composer glow on/off switch (see below).
+- **Transition & schedule** (General → below Appearance): switch animation + scheduled switching (see below).
+- **Theme settings** section: contains the **custom background** (static images + dynamic wallpaper videos) and the **lighting effect** switch (see below).
 
 - **Switch animation**: None / Fade / Circle reveal / Wipe from top — full-screen transitions when light/dark is switched.
 - **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
-- **Custom background**: static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
-- **Lighting effect**: a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; while the assistant is replying, the glow radiates outward as a rainbow that flows around the border. Can be switched off at any time.
+- **Custom background** (Theme settings): static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
+- **Lighting effect** (Theme settings): a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; from the moment the conversation starts running until it completes, the glow turns into a rainbow flowing around the border, then reverts. Can be switched off at any time.
 
 ## Screenshot
 
@@ -104,9 +103,10 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - DevTools shows a `<style data-plugin="dsh-client-ui-frosted-glass">` in `<head>` and inline translucent tokens (`--dsw-alias-bg-base`, ...) on `body`.
 - `body[data-ds-dark-theme]` switches the dark gradient and dark translucent tokens.
 - Settings → General → below Appearance shows **Transition & schedule**; picking an animation and clicking light/dark plays the full-screen transition.
+- The settings navigation shows a **Theme settings** section (right after General) containing the custom background and lighting items.
 - With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
-- **Custom background**: choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
-- **Lighting effect** is on by default: the input shows a blue glowing edge; during a running reply it becomes a flowing rainbow aura. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
+- **Custom background** (Theme settings): choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
+- **Lighting effect** (Theme settings) is on by default: the input shows a blue glowing edge; while the conversation runs it becomes a flowing rainbow aura and reverts when the run completes. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
 
 ## Customize
 
