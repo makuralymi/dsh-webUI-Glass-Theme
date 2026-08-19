@@ -13,7 +13,7 @@ The plugin also adds a **Transition & schedule** row right below **Appearance** 
 - **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
 - **Custom background** (Theme settings): static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
 - **Lighting effect** (Theme settings): a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; from the moment the conversation starts running until it completes, the glow turns into a rainbow flowing around the border, then reverts. Can be switched off at any time.
-- **System notifications** (Theme settings): uses the browser Notification API to send a system-level notification when a **run finishes** and when a **choice/question prompt** (ask_user_question) appears; clicking the notification focuses the window, taking you to the result or the pending question. Enabling the switch requests notification permission.
+- **System notifications** (Theme settings): uses the browser Notification API to send a system-level notification when a **run finishes** and when a **choice/question prompt** (ask_user_question) appears; clicking the notification focuses the window, taking you to the result or the pending question. The switch is off by default; enabling it requests notification permission and sends a test notification to confirm.
 
 ## Screenshot
 
@@ -54,7 +54,7 @@ Two browser-side halves:
    - The glow consists of an outside edge ring plus naturally fading `box-shadow` light — everything stays OUTSIDE the dialog, the interior remains clean with no hard boundary.
 
 7. **System notifications**
-   - The switch persists as `ui-theme.frostedNotifyEnabled` (default on); turning it on calls `Notification.requestPermission()` (inside the user gesture, so the prompt is allowed).
+   - The switch persists as `ui-theme.frostedNotifyEnabled` (**default off**, opt-in). The browser only allows the notification permission prompt inside a user gesture, so it's an explicit switch: turning it on calls `Notification.requestPermission()` and, once granted, immediately sends a test notification to confirm it works.
    - **Run finished**: reuses the conversation-run tracking — when a session's `running` flag flips true→false (a real run ending; switching sessions does not misfire), a “Conversation finished” notification is sent.
    - **Choice / question prompt**: a MutationObserver watches for `[data-question-key]` / `[data-plan-review-key]` (the stable ask_user_question markers) appearing and sends a “Your choice is needed” notification carrying the question title.
    - The web Notification API cannot carry clickable action buttons on a normal page (no service worker), so options can't be picked right on the notification; instead, **clicking the notification focuses the app window**, taking you to the result or the pending question.
@@ -114,7 +114,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
 - **Custom background** (Theme settings): choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
 - **Lighting effect** (Theme settings) is on by default: the input shows a blue glowing edge; while the conversation runs it becomes a flowing rainbow aura and reverts when the run completes. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
-- **System notifications** (Theme settings) is on by default: the first enable requests notification permission; after a run completes you get a “Conversation finished” system notification, and when a choice/question prompt appears you get a “Your choice is needed” notification — clicking either focuses the window.
+- **System notifications** (Theme settings) is off by default: turning the switch on asks the browser for notification permission and, once granted, sends a test notification right away. After that, a run completing produces a “Conversation finished” notification and a choice/question prompt produces a “Your choice is needed” notification — clicking either focuses the window.
 
 ## Customize
 
