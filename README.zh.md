@@ -12,6 +12,7 @@
 - **自定义背景**（主题设置）：支持静态图片（URL / 本地）与动态壁纸视频（视频 URL / 本地视频），一键恢复默认背景。
 - **灯光效果**（主题设置）：给输入框（composer）加一层蓝色发光边缘与光晕，颜色实时跟随主题品牌色；对话一开始运行（提交即触发，涵盖工具调用阶段）发光自动变为沿边框流动的彩虹彩光，对话完成后自动恢复；可随时关闭。
 - **系统通知**（主题设置）：调用浏览器 Notification API，在**对话运行结束**、以及**出现选择/问题建议**（ask_user_question）时发送系统级通知；点击通知聚焦窗口直达结果或待回答的问题。开关默认关闭，打开时请求通知权限并发一条测试通知确认。
+- **莫奈取色**（主题设置 → 界面主题）：与毛玻璃并列的独立主题。选择「莫奈取色」后关闭毛玻璃与背景模糊、改用平铺配色；从当前壁纸（或自选图片 / 手动取色）提取种子色，生成色调色板，并通过 `ctx.theme.register` 注册 `monet-light` / `monet-dark` 两套主题定义。
 
 ## 截图
 
@@ -57,6 +58,13 @@
    - **选择/问题建议**：用 MutationObserver 监听 `[data-question-key]` / `[data-plan-review-key]`（ask_user_question 的稳定标记）出现，发送「需要你的选择」通知并带上问题标题文本。
    - 浏览器 Notification API 在普通网页（无 Service Worker）下不支持通知内按钮，因此无法直接在通知上点选选项；作为替代，**点击通知会聚焦应用窗口**，直达结果或待回答的问题。
 
+8. **莫奈取色（壁纸取色主题）**
+   - 主题模式存于 `ui-theme.frostedSkinMode`（`glass` / `monet`，默认 `glass`）；选择 `monet` 时毛玻璃表面覆盖与背景模糊全部关闭。莫奈的深浅模式存于 `ui-theme.frostedMonetScheme`（system / light / dark），种子色存于 `ui-theme.frostedMonetSeed`。
+   - 内置一套零依赖的 OKLCH 色调色板引擎（Material You 风格：同色相跨色调、色度按色域自动收敛），生成别名 token 覆盖。
+   - 通过 `ctx.theme.register` 按 ThemeDefinition 规范注册 `monet-light` 与 `monet-dark` 两套具体主题；由于第三方主题 id 只存在于进程内，插件会在每次设置同步后从持久化设置重新应用所选莫奈主题。
+   - **取色来源**：从自定义背景图取色（本地 / URL 图片；视频壁纸在播放时截取当前帧）、从电脑桌面取色（宿主侧用跨平台 `wallpaper` 包读取系统壁纸，覆盖 GNOME / KDE / XFCE / MATE / Cinnamon / swaybg / swww / macOS / Windows；失败时回退到内置检测脚本）、从屏幕取色（浏览器 `getDisplayMedia` 捕获整个屏幕，容器/远程环境也通用）、选择本地图片取色、或用 `<input type="color">` 手动选色。
+   - 毛玻璃层与莫奈主题互斥：`applySkinMode` 在 `glass` 模式注册半透明表面 token，在 `monet` 模式移除该层并给 `body[data-frost-skin="monet"]` 关闭背景图与 `backdrop-filter`，莫奈主题以不透明平铺表面渲染。
+
 ![演示截图](assets/sc2.png)
 
 ## 目录结构
@@ -65,7 +73,7 @@
     ├── package.json          # dsh.bundle（自插入行）+ dsh.client（浏览器半）
     ├── cordis.patch.yml      # bundle 补丁：向组合插入 ui-frosted-glass 行
     ├── lib/
-    │   ├── index.js          # 宿主半（空 apply，仅为出现在 Loader 中）
+    │   ├── index.js          # 宿主半（桌面壁纸 API 路由；wallpaper 包 + subprocess 回退）
     │   └── client.js         # 浏览器半（window.__ModuleLoader__.load 打包格式）
     ├── README.md
     └── README.zh.md
@@ -113,6 +121,7 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 - 「主题设置 → 自定义背景」中可分别选择静态图片或动态壁纸：选择本地视频后会出现全屏 `video` 动态背景；点击「恢复默认背景图」后回到内置背景。
 - 「主题设置 → 灯光效果」默认开启：输入框呈现蓝色发光边缘；对话运行时变为流动彩虹光晕；关闭开关后发光立即消失，body 上的 `data-frost-glow` 属性同步移除。
 - 「主题设置 → 系统通知」默认关闭：打开开关时浏览器会请求通知权限，授权后立即收到一条测试通知；之后一轮对话结束收到「对话结束」通知，出现选择/问题建议时收到「需要你的选择」通知，点击通知聚焦窗口。
+- 「主题设置 → 界面主题」默认选中「毛玻璃」；切换到「莫奈取色」后立即应用由当前种子色生成的 Material You 平铺配色，背景模糊与半透明玻璃同时关闭。莫奈子项中可调深浅模式、种子色；「从自定义背景图取色」采样当前背景，「从电脑桌面取色」读取操作系统桌面壁纸，「从屏幕取色」通过浏览器屏幕捕获取当前屏幕主色（选“整个屏幕”并最小化窗口后即桌面壁纸），「选择图片取色」采样本地图片，颜色输入与默认色块可手动设定种子色，行内实时显示色板预览。自动取色可设置每 N 分钟从所选来源（自定义背景图 / 电脑桌面 / 屏幕）重新提取；屏幕来源因浏览器授权限制，到点会跳过。
 
 ## 自定义
 
@@ -129,4 +138,6 @@ lib/client.js 是手写的浏览器打包产物（与 tsdown 产出的 window.__
 ## 已知限制
 
 - 外壳框架与输入框（composer）的 backdrop-filter 通过稳定的 data-* 属性选择（:has(> [data-shell-overlay]) 与 [data-composer-card]），不依赖构建 hash；浮层走 role 选择器，半透明 token 覆盖同样与 class 名无关。
-- 第三方主题 token 覆盖是运行时叠加层，不做完整性校验；这里刻意只覆盖“表面背景”类 token，文本/状态 token 保持可读。
+- 第三方主题 token 覆盖是运行时叠加层，不做完整性校验；毛玻璃层刻意只覆盖“表面背景”类 token，而莫奈主题会同时重色 brand/文本/边框/状态类 token。
+- 莫奈引擎以 OKLCH 色调色板近似 Material You（而非原版 HCT 求解器），生成的色带感知均匀且忠实于种子色，但与 Android 原生 Monet 并非逐值一致。
+- 内置偏好优先：选择莫奈后，点击外观的「浅色 / 深色 / 跟随系统」或触发定时切换会切回毛玻璃主题。

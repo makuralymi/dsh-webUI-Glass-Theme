@@ -14,6 +14,7 @@ The plugin also adds a **Transition & schedule** row right below **Appearance** 
 - **Custom background** (Theme settings): static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
 - **Lighting effect** (Theme settings): a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; from the moment the conversation starts running until it completes, the glow turns into a rainbow flowing around the border, then reverts. Can be switched off at any time.
 - **System notifications** (Theme settings): uses the browser Notification API to send a system-level notification when a **run finishes** and when a **choice/question prompt** (ask_user_question) appears; clicking the notification focuses the window, taking you to the result or the pending question. The switch is off by default; enabling it requests notification permission and sends a test notification to confirm.
+- **Monet colors** (Theme settings → Interface theme): an independent theme alongside frosted glass. Selecting Monet disables the glass blur and translucent surfaces and applies a flat Material You palette; it extracts a seed color from the current wallpaper (or a chosen image / manual picker) and registers the `monet-light` and `monet-dark` theme definitions through `ctx.theme.register`.
 
 ## Screenshot
 
@@ -59,6 +60,13 @@ Two browser-side halves:
    - **Choice / question prompt**: a MutationObserver watches for `[data-question-key]` / `[data-plan-review-key]` (the stable ask_user_question markers) appearing and sends a “Your choice is needed” notification carrying the question title.
    - The web Notification API cannot carry clickable action buttons on a normal page (no service worker), so options can't be picked right on the notification; instead, **clicking the notification focuses the app window**, taking you to the result or the pending question.
 
+8. **Monet colors (wallpaper color extraction)**
+   - The skin mode persists as `ui-theme.frostedSkinMode` (`glass` / `monet`, default `glass`); selecting `monet` removes the frosted-glass token layer and backdrop blur. Monet's light/dark/system mode persists as `ui-theme.frostedMonetScheme`, and the extracted seed as `ui-theme.frostedMonetSeed`.
+   - A dependency-free OKLCH tonal-palette engine (Material You style: same hue across tones, gamut-clamped chroma) generates the alias-token overrides.
+   - The two concrete themes are registered through `ctx.theme.register` as `monet-light` and `monet-dark` (ThemeDefinition spec); the plugin re-applies the selected one from durable settings after each sync because third-party theme ids are intentionally process-only.
+   - **Seed sources**: extract from the custom background (local/URL image, or a video frame when a video wallpaper is active), extract from the OS desktop wallpaper (the host half reads it with the cross-platform `wallpaper` package — GNOME / KDE / XFCE / MATE / Cinnamon / swaybg / swww / macOS / Windows — and falls back to built-in detection scripts), or extract from the screen via browser `getDisplayMedia` (choose the whole screen and minimize windows to sample the desktop wallpaper), choose an image file, or pick a color manually with `<input type="color">`.
+   - Frosted glass and Monet are mutually exclusive: `applySkinMode` registers the translucent surface layer in `glass` mode and removes it in `monet` mode, while `body[data-frost-skin="monet"]` disables the background image and every `backdrop-filter`, so Monet renders flat opaque surfaces.
+
 ![演示截图](assets/sc2.png)
 
 ## Layout
@@ -67,7 +75,7 @@ Two browser-side halves:
     ├── package.json          # dsh.bundle (self-inserting row) + dsh.client (browser half)
     ├── cordis.patch.yml      # bundle patch: inserts the ui-frosted-glass row
     ├── lib/
-    │   ├── index.js          # host half (empty apply, only to appear in the Loader)
+    │   ├── index.js          # host half (desktop-wallpaper API route; wallpaper package + subprocess fallback)
     │   └── client.js         # browser half (window.__ModuleLoader__.load bundle format)
     ├── README.md
     └── README.zh.md
@@ -115,12 +123,14 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - **Custom background** (Theme settings): choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
 - **Lighting effect** (Theme settings) is on by default: the input shows a blue glowing edge; while the conversation runs it becomes a flowing rainbow aura and reverts when the run completes. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
 - **System notifications** (Theme settings) is off by default: turning the switch on asks the browser for notification permission and, once granted, sends a test notification right away. After that, a run completing produces a “Conversation finished” notification and a choice/question prompt produces a “Your choice is needed” notification — clicking either focuses the window.
+- **Interface theme** (Theme settings, first row) defaults to “Frosted glass”; switching it to “Monet colors” applies a flat Material You palette generated from the current seed and turns off the backdrop blur and translucent surfaces. Under Monet, “Extract from custom background” samples the current background, “Extract from desktop” reads the OS desktop wallpaper through the host route, “Extract from screen” captures the current screen through the browser, “Choose image” samples a local picture, and the color input / default swatch set the seed manually. The row shows a live palette preview. Auto extraction can re-extract every N minutes from the selected source (custom background / desktop / screen); the screen source is skipped because it needs a user gesture.
 
 ## Customize
 
 - Blur: `--frosted-blur` (default 20px) and `--frosted-saturate` (default 180%) in `lib/client.js`.
 - Background: replace `assets/bg.jpeg` then re-inline (or edit the `--frosted-bg-image` data URI in `lib/client.js`); dark-mode dim strength is the `linear-gradient` alpha under `body[data-ds-dark-theme]`.
 - Translucency: the `rgba` alpha values in `FROSTED_TOKENS`.
+- Monet palette: `MONET_DEFAULT_SEED` (default `#4d6bfe`), the `MONET_CHROMA_SCALE` mapping and the role/tone tables in `buildMonetScheme` / `buildMonetLightTokens` / `buildMonetDarkTokens`.
 - For broader coverage, add more `--dsw-alias-bg-*` / `--dsw-specific-*` tokens to `FROSTED_TOKENS`.
 - Animation speed: `--frost-vt-duration` in `lib/client.js` (default 340ms).
 - Animation easing: `--frost-vt-easing`.
@@ -131,4 +141,5 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 ## Known limitations
 
 - The frame and composer-card `backdrop-filter` ride stable `data-*` attributes (`:has(> [data-shell-overlay])` and `[data-composer-card]`) rather than hashed module classes; floating surfaces use `[role=...]`, and the translucent-token override is class-name agnostic.
-- Third-party theme token overrides are a runtime layer with no completeness validation; this plugin intentionally overrides only surface-background tokens and leaves text/state tokens readable.
+- Third-party theme token overrides are a runtime layer with no completeness validation; the frosted-glass layer intentionally overrides only surface-background tokens, while the Monet themes also recolor brand/text/border/state tokens.
+- The Monet engine approximates Material You with OKLCH tonal palettes rather than the original HCT solver; the generated ramps are perceptually even and seed-accurate, but not bit-identical to Android's Monet.

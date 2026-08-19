@@ -1,7 +1,7 @@
 {
   "name": "dsh-client-ui-frosted-glass",
-  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI with animated light/dark switching, a scheduled theme timer, a composer glow lighting effect and system notifications",
-  "version": "0.4.0",
+  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI with animated light/dark switching, a scheduled theme timer, a composer glow lighting effect, system notifications and a Monet (Material You) wallpaper color-extraction theme",
+  "version": "0.5.0",
   "publishConfig": {
     "access": "public"
   },
@@ -31,6 +31,9 @@
     "lib/client.js",
     "lib/index.js"
   ],
+  "dependencies": {
+    "wallpaper": "^7.3.1"
+  },
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/dsh-client-ui-theme": "^0.1.0-rc.6",
