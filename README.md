@@ -7,12 +7,13 @@ A **global frosted-glass (backdrop blur) theme plugin** for the dsh Web UI. It k
 The plugin also adds a **Transition & schedule** row right below **Appearance** in Settings → General, plus a new **Theme settings** section in the settings navigation:
 
 - **Transition & schedule** (General → below Appearance): switch animation + scheduled switching (see below).
-- **Theme settings** section: contains the **custom background** (static images + dynamic wallpaper videos) and the **lighting effect** switch (see below).
+- **Theme settings** section: contains the **custom background** (static images + dynamic wallpaper videos), the **lighting effect** switch and the **system notifications** switch (see below).
 
 - **Switch animation**: None / Fade / Circle reveal / Wipe from top — full-screen transitions when light/dark is switched.
 - **Scheduled switching**: set a daily dark-theme time and light-theme time; the UI switches automatically at those boundaries, and manual switches last until the next boundary.
 - **Custom background** (Theme settings): static images (URL / local) and dynamic wallpaper videos (video URL / local file), with one-click reset to the built-in background.
 - **Lighting effect** (Theme settings): a blue glowing edge and halo around the composer, recolored in real time from the theme's brand token; from the moment the conversation starts running until it completes, the glow turns into a rainbow flowing around the border, then reverts. Can be switched off at any time.
+- **System notifications** (Theme settings): uses the browser Notification API to send a system-level notification when a **run finishes** and when a **choice/question prompt** (ask_user_question) appears; clicking the notification focuses the window, taking you to the result or the pending question. Enabling the switch requests notification permission.
 
 ## Screenshot
 
@@ -51,6 +52,12 @@ Two browser-side halves:
    - Idle: the `[data-composer-card]` input gains a blue glowing edge (masked gradient ring) plus a brand-colored soft glow (`box-shadow`), driven by `--dsw-alias-brand-primary` so it recolors in real time when theme tokens change.
    - Running: the ring turns into a flowing `conic-gradient` rainbow from the moment the conversation starts running until it completes — the session runtime's `running` flag is mirrored to `body[data-conversation-running]` by JS (covers tool-call phases), with `body:has([data-streaming])` as a fallback; the edge reverts to blue when the run ends (respects `prefers-reduced-motion`, degrading to a static rainbow).
    - The glow consists of an outside edge ring plus naturally fading `box-shadow` light — everything stays OUTSIDE the dialog, the interior remains clean with no hard boundary.
+
+7. **System notifications**
+   - The switch persists as `ui-theme.frostedNotifyEnabled` (default on); turning it on calls `Notification.requestPermission()` (inside the user gesture, so the prompt is allowed).
+   - **Run finished**: reuses the conversation-run tracking — when a session's `running` flag flips true→false (a real run ending; switching sessions does not misfire), a “Conversation finished” notification is sent.
+   - **Choice / question prompt**: a MutationObserver watches for `[data-question-key]` / `[data-plan-review-key]` (the stable ask_user_question markers) appearing and sends a “Your choice is needed” notification carrying the question title.
+   - The web Notification API cannot carry clickable action buttons on a normal page (no service worker), so options can't be picked right on the notification; instead, **clicking the notification focuses the app window**, taking you to the result or the pending question.
 
 ![演示截图](assets/sc2.png)
 
@@ -107,6 +114,7 @@ Use this OR the `dsh plugin` path above, not both (they insert the same row). Fo
 - With the schedule enabled, the theme switches automatically at the configured times; settings persist under `ui-theme.frosted*` in `$DSH_HOME/settings.yaml`.
 - **Custom background** (Theme settings): choose a static image or a dynamic video; local videos mount a full-screen `<video>` layer immediately, and “Reset to default background” restores the built-in background.
 - **Lighting effect** (Theme settings) is on by default: the input shows a blue glowing edge; while the conversation runs it becomes a flowing rainbow aura and reverts when the run completes. Turning the switch off removes the glow immediately (`data-frost-glow` disappears from `body`).
+- **System notifications** (Theme settings) is on by default: the first enable requests notification permission; after a run completes you get a “Conversation finished” system notification, and when a choice/question prompt appears you get a “Your choice is needed” notification — clicking either focuses the window.
 
 ## Customize
 

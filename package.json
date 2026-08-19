@@ -1,7 +1,7 @@
 {
   "name": "dsh-client-ui-frosted-glass",
-  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI with animated light/dark switching, a scheduled theme timer and a composer glow lighting effect",
-  "version": "0.3.0",
+  "description": "Global frosted-glass (backdrop blur) theme plugin for the dsh web UI with animated light/dark switching, a scheduled theme timer, a composer glow lighting effect and system notifications",
+  "version": "0.4.0",
   "publishConfig": {
     "access": "public"
   },
